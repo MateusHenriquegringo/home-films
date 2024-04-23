@@ -1,0 +1,75 @@
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Brazil
+      - JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
+    volumes:
+      - /etc/jellyfin/config:/config
+      - /mnt/hd4tb/data/media:/data/tvshows
+      - /mnt/hd4tb/data/media:/data/movies
+    ports:
+      - 8096:8096
+      - 8920:8920 #optional
+      - 7359:7359/udp #optional
+      - 1900:1900/udp #optional
+    restart: unless-stopped
+   qbittorrent:
+     image: lscr.io/linuxserver/qbittorrent:latest
+     container_name: qbittorrent
+     environment:
+       - PUID=1000
+       - PGID=1000
+       - TZ=Brazil
+       - WEBUI_PORT=8080
+       - TORRENTING_PORT=6881
+     volumes:
+       - /etc/qbitorrent/config:/config
+       - /mnt/hd4tb/data/torrents:/data/torrents
+     ports:
+       - 8080:8080
+       - 6881:6881
+       - 6881:6881/udp
+     restart: unless-stopped
+
+   radarr:
+     image: lscr.io/linuxserver/radarr:latest
+     container_name: radarr
+     environment:
+       - PUID=1000
+       - PGID=1000
+       - TZ=Brazil
+     volumes:
+       - /etc/radarr/config:/config
+       - /mnt/hd4tb/data:/data
+     ports:
+       - 7878:7878
+     restart: unless-stopped
+
+
+   prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Brazil
+    volumes:
+      - /etc/prowlarr/config:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+   flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Brazil
+    ports:
+      - "${PORT:-8191}:8191"  
+    restart: unless-stopped
